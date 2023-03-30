@@ -13,5 +13,9 @@ namespace StudentAdminPortal.API.Repositories
         //we are going to change the definition of the IStudentRepository by making it a Task of List of type Student.
         //We are also going to use the using System.Threading.Tasks statement.
         Task<List<Student>> GetStudentsAsync();
+
+        //We will define a method that returns only a single Student
+        //We will pass a single parameter
+        Task<Student> GetStudentAsync(Guid studentId);
     }
 }

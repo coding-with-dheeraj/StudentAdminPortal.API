@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using StudentAdminPortal.API.DataModels;
 using StudentAdminPortal.API.Repositories;
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -14,6 +16,19 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("StudentAdminPort
 //Here IStudentRepository is Injected through Builder Service using IoC Principle
 //AddScoped operation is used to implement DI
 builder.Services.AddScoped<IStudentRepository, SqlStudentRepository>();
+
+//We need to define our CORS policy here to enable API to communicate with our Angular App
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins("*")
+                    .AllowAnyHeader()
+                    .WithMethods("*")
+                    .WithExposedHeaders("*");
+        });
+});
 
 
 builder.Services.AddControllers();
@@ -38,6 +53,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
+
+//Use the CORS policy here
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthorization();
 

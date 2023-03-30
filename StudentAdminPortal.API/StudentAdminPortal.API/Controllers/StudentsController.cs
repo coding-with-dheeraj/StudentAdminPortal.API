@@ -4,6 +4,7 @@ using StudentAdminPortal.API.DataModels;
 using StudentAdminPortal.API.DomainModels;
 using StudentAdminPortal.API.Repositories;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace StudentAdminPortal.API.Controllers
 {
@@ -93,5 +94,35 @@ namespace StudentAdminPortal.API.Controllers
             return Ok(mapper.Map<List<DomainModels.Student>>(students));
         }
 
+        //Here we create a new Controller Action
+        //We will define our Route here using the REST naming Convention
+        //Then we will define our method as above
+        //Making our method async, that returns Task of IActionResult
+        //The name of the method is GetStudentAsync()
+        //The Controller method expects value from the route of type Guid with the parameter name
+        //Once we get the value of StudentID from the route, to our method
+        //We can then pass the value to the StudentRepository so that
+        //It can fetch the deatils  of the Student from the database
+        //Once it is fetched from the database, it can return an object or null
+        
+        [HttpGet]
+        [Route("[controller]/{studentId:guid}")]
+        public async Task<IActionResult> GetStudentAsync([FromRoute] Guid studentId)
+        {
+            //Fetch a single Student Detail
+            //Creating a variable that expects a value 
+            var student = await studentRepository.GetStudentAsync(studentId);
+
+            //Return Student
+            //Here we check for null cases
+            if (student == null) 
+            {
+                return NotFound();
+            }
+
+            //Here we need AutoMapper to convert from the DataModel to the DomainModel
+            return Ok(mapper.Map<DomainModels.Student>(student));
+
+        }
     }
 }
