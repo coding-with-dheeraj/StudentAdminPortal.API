@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using StudentAdminPortal.API.DataModels;
 using StudentAdminPortal.API.DomainModels;
 using StudentAdminPortal.API.Repositories;
@@ -123,6 +124,32 @@ namespace StudentAdminPortal.API.Controllers
             //Here we need AutoMapper to convert from the DataModel to the DomainModel
             return Ok(mapper.Map<DomainModels.Student>(student));
 
+        }
+
+        //
+        [HttpPut]
+        [Route("[controller]/{studentId:guid}")]
+
+        public async Task<IActionResult> UpdateStudentAsync([FromRoute]  Guid studentId, [FromBody] UpdateStudentRequest request)
+        {
+
+            //Checking if the student exists in the database, through the repository
+            if (await studentRepository.Exists(studentId))
+            {
+                //Update Details
+                //Here we are mapping from DataModel
+                var updatedStudent = await studentRepository.UpdateStudent(studentId, mapper.Map<DataModels.Student>(request));
+
+                if (updatedStudent != null)
+                {
+                    //Which is mapped back to the DataModel
+                    return Ok(mapper.Map<DomainModels.Student>(updatedStudent));
+                }
+            }
+
+
+
+            return NotFound();
         }
     }
 }
