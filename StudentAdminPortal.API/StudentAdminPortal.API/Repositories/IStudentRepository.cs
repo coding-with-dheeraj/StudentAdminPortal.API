@@ -29,5 +29,9 @@ namespace StudentAdminPortal.API.Repositories
         //Creating updateStudent method
         //Student type and Student object, both is coming from DataModel
         Task<DataModels.Student> UpdateStudent(Guid studentId, DataModels.Student request);
+
+        //Creating an Interface for DeleteStudent method
+        //It will be a Task of type Student from DataModels
+        Task<DataModels.Student> DeleteStudent(Guid studentId);
     }
 }

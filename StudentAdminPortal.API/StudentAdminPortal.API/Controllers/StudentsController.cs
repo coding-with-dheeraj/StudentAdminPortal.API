@@ -126,7 +126,7 @@ namespace StudentAdminPortal.API.Controllers
 
         }
 
-        //
+        //Creating a new controller method for Updating Student Details
         [HttpPut]
         [Route("[controller]/{studentId:guid}")]
 
@@ -142,12 +142,31 @@ namespace StudentAdminPortal.API.Controllers
 
                 if (updatedStudent != null)
                 {
-                    //Which is mapped back to the DataModel
+                    //Which is mapped back to the DomainModel
                     return Ok(mapper.Map<DomainModels.Student>(updatedStudent));
                 }
             }
+            return NotFound();
+        }
 
+        //Creating a new controller method for Deleting Student record
+        //Using decorator to use the http verb
+        //Also creating a route that requires studentId
+        //The controller method will have route as the parameter, that reads the studentId
+        //Because to Delete a record studentId is the only argument that needed
+        [HttpDelete]
+        [Route("[controller]/{studentId:guid}")]
 
+        public async Task<IActionResult> DeleteStudentAsync([FromRoute] Guid studentId)
+        {
+            //Using studentRepository to check if the studentId through the Exist()
+            //Using await because its an async method
+            if (await studentRepository.Exists(studentId))
+            {
+                //Delete the student
+                var student = await studentRepository.DeleteStudent (studentId);
+                return Ok(mapper.Map<DomainModels.Student>(student));
+            }
 
             return NotFound();
         }

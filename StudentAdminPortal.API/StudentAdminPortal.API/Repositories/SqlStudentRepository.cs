@@ -90,5 +90,27 @@ namespace StudentAdminPortal.API.Repositories
 
             return null;
         }
+
+        // The interface created in IStudentRepository is IMPLEMENTED here
+        //Making it async
+        public async Task<Student> DeleteStudent(Guid studentId)
+        {
+            //Fetching student from the Get Student async method
+            var student = await GetStudentAsync(studentId);
+
+            if(student != null)
+            {
+                //Throught this SqlStudentRepository we will use this context to communicate to the Database
+                //So by using context with remove method allows us to delete it from the DB
+                //Saving changes
+                //And Returning student for displaying purposes
+                context.Student.Remove(student);
+                await context.SaveChangesAsync();
+                return student;
+            }
+
+            //If student is empty
+            return null;
+        }
     }
 }
