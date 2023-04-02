@@ -107,7 +107,7 @@ namespace StudentAdminPortal.API.Controllers
         //Once it is fetched from the database, it can return an object or null
         
         [HttpGet]
-        [Route("[controller]/{studentId:guid}")]
+        [Route("[controller]/{studentId:guid}"), ActionName("GetStudentAsync")]
         public async Task<IActionResult> GetStudentAsync([FromRoute] Guid studentId)
         {
             //Fetch a single Student Detail
@@ -170,5 +170,23 @@ namespace StudentAdminPortal.API.Controllers
 
             return NotFound();
         }
+
+
+        //Add Student Method
+        //Using the decorator HttpPost so that the method can be identified and supported with POST operation
+        //Using Route that points to the controller
+        [HttpPost]
+        [Route("[controller]/Add")]
+
+        public async Task<IActionResult> AddStudentAsync([FromBody] AddStudentRequest request)
+        {
+            //Implementing AddStudent method
+            //CreatedAtAction requires the last parameter to be an object, and since we are to pass Student from
+            //Domain Model, we are using Mapper to map the source object to the new destination object
+            var student = await studentRepository.AddStudent(mapper.Map<DataModels.Student>(request));
+            return CreatedAtAction(nameof(GetStudentAsync), new { studentId = student.Id },
+                mapper.Map<DomainModels.Student>(student));
+        }
+
     }
 }

@@ -112,5 +112,18 @@ namespace StudentAdminPortal.API.Repositories
             //If student is empty
             return null;
         }
+
+        //The interface AddStudent is implemented here
+
+        public async Task<Student> AddStudent(Student request)
+        {
+            //Using context to go to the DB and return the Add operator
+            //Using a var student to store the value while it waits for the completion of
+            //an asynchronous operation before continuing with the execution of the program.
+            //After that, using context to save changes
+            var student = await context.Student.AddAsync(request);
+            await context.SaveChangesAsync();
+            return student.Entity;
+        }
     }
 }

@@ -31,6 +31,10 @@ namespace StudentAdminPortal.API.Profiles
             //Using the class UpdateStudentRequestAfterMap to create the mapping criteria
             CreateMap<UpdateStudentRequest, DataModels.Student>() 
                 .AfterMap<UpdateStudentRequestAfterMap>();
+
+            //Creating a mapping criteria for AddStudentRequest class
+            CreateMap<AddStudentRequest, DataModels.Student>()
+                .AfterMap<AddStudentRequestAfterMap>();
         }
     }
 }
