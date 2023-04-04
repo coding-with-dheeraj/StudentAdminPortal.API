@@ -37,5 +37,8 @@ namespace StudentAdminPortal.API.Repositories
         //Creating an Interface for AddStudent method
         //Student type and object is both coming from the DataModels
         Task<DataModels.Student> AddStudent(DataModels.Student request);
+
+        //Creating a method UpdateProfileImage
+        Task<bool> UpdateProfileImage(Guid studentId, string profileImageUrl);
     }
 }

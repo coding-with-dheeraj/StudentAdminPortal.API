@@ -16,6 +16,8 @@ namespace StudentAdminPortal.API.Controllers
     {
         private readonly IStudentRepository studentRepository;
         private readonly IMapper mapper;
+        private readonly IImageRepository imageRepository;
+        
 
         //We need to inject IStudentRepository through Builder Services in Program.cs and using Dependency Inversion Principle
         //we need inject it in StudentsController
@@ -24,10 +26,14 @@ namespace StudentAdminPortal.API.Controllers
         //Ctrl + . to create and assign field 'studentRepository'
         //We also need to inject AutoMapper here, by importing using AutoMapper statement
         //Ctrl + . on mapper and create and assign field
-        public StudentsController(IStudentRepository studentRepository, IMapper mapper)
+
+        //Injecting IImageRepository in the Controller constructor
+        //Also create and assign a field of imageRepository
+        public StudentsController(IStudentRepository studentRepository, IMapper mapper, IImageRepository imageRepository)
         {
             this.studentRepository = studentRepository;
             this.mapper = mapper;
+            this.imageRepository = imageRepository;
         }
 
         //We also need to annotate the Http Get method
@@ -186,6 +192,36 @@ namespace StudentAdminPortal.API.Controllers
             var student = await studentRepository.AddStudent(mapper.Map<DataModels.Student>(request));
             return CreatedAtAction(nameof(GetStudentAsync), new { studentId = student.Id },
                 mapper.Map<DomainModels.Student>(student));
+        }
+
+
+        //Creating Upload image Controller Action
+        [HttpPost]
+        [Route("[controller]/{studentId:guid}/upload-image")]
+
+        public async Task<IActionResult> UploadImage([FromRoute] Guid studentId, IFormFile profileImage)
+        {
+            //Check if the student exist in the DB
+            if(await studentRepository.Exists(studentId))
+            {
+
+                var fileName = Guid.NewGuid() + Path.GetExtension(profileImage.FileName);
+                //Upload the Image to Local Storage
+                var fileImagePath = await imageRepository.Upload(profileImage, fileName);
+
+                //Update the Profile Image path in the DB
+                //On successful request, we will return the file image path as a string
+                 if (await studentRepository.UpdateProfileImage(studentId, fileImagePath))
+                    {
+                        return Ok(fileImagePath);
+                    }
+
+                 //But if something goes wrong, we will return a Status Code
+                 return StatusCode(StatusCodes.Status500InternalServerError,"Error Uploading Image");
+            }
+
+            //If student does not exist
+            return NotFound();
         }
 
     }

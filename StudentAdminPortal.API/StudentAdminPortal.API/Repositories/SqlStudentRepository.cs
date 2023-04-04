@@ -125,5 +125,26 @@ namespace StudentAdminPortal.API.Repositories
             await context.SaveChangesAsync();
             return student.Entity;
         }
+
+
+        //UpdateProfileImage method is implemented here
+        
+        public async Task<bool> UpdateProfileImage(Guid studentId, string profileImageUrl)
+        {
+            //We will fetch the student first
+            var student = await GetStudentAsync(studentId);
+
+            //It will give us two different results, null or not null
+            //If not null we will Update the DB, and save changes
+            if(student != null)
+            {
+                student.ProfileImageUrl = profileImageUrl;
+                await context.SaveChangesAsync();
+                return true;
+            }
+
+            //If null
+            return false;
+        }
     }
 }
